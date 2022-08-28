@@ -92,7 +92,6 @@ if(edit === true){
     question: questionsText,
     options: optionsArray,
   }
-  console.log(questionAnswerObjArr[editKey])
   setEdit(false)
 
 }
