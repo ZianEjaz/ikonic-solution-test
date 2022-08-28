@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TextArea from "../components/FormComponent";
 import PreviewComponent from "../components/PreviewComponent";
 import OptionsComponent from "../components/OptionsComponent";
 import { ToastContainer, toast } from "react-toastify";
 import AllQuestions from "../components/AllQuestions";
+import axios from "axios"
+
 
 const Home = () => {
   // state hooks
@@ -14,37 +16,17 @@ const Home = () => {
   );
   const [edit, setEdit] = useState(false);
   const [editKey, setEditKey] = useState();
-  const [questionAnswerObjArr, setQuestionAnswerObjArr] = useState([
-    // {
-    //   key: 0,
-    //   question: "test question",
-    //   options: [
-    //     {
-    //       option: "1",
-    //       correct: false,
-    //     },
-    //     {
-    //       option: "2",
-    //       correct: false,
-    //     },
-    //     {
-    //       option: "3",
-    //       correct: true,
-    //     },
-    //     {
-    //       option: "4",
-    //       correct: false,
-    //     },
-    //   ],
-    // },
-  ]);
+  const [questionAnswerObjArr, setQuestionAnswerObjArr] = useState([]);
   const [optionsArray, setOptionsArray] = useState(
     // questionAnswerObjArr[0].options
     []
   );
 
-  // const [questionsArray, setQuestionsArray] = useState([])
-  // const [answersArray, setAnswersArray] = useState([])
+  // fetching data from api
+  useEffect(() => {
+    axios.get("http://localhost:3001/questions")
+    .then(res=>setQuestionAnswerObjArr(res.data))
+  },[]);
 
   // functions
   const questionInputHandle = (event) => {
@@ -83,19 +65,15 @@ const Home = () => {
   };
 
   const submitQuestionAnswer = () => {
-
-// edit logic
-if(edit === true){
-  
-  questionAnswerObjArr[editKey] = {
-    key: questionAnswerObjArr.length,
-    question: questionsText,
-    options: optionsArray,
-  }
-  setEdit(false)
-
-}
-else if (questionsText === "" || optionsArray.length < 1) {
+    // edit logic
+    if (edit === true) {
+      questionAnswerObjArr[editKey] = {
+        key: questionAnswerObjArr.length,
+        question: questionsText,
+        options: optionsArray,
+      };
+      setEdit(false);
+    } else if (questionsText === "" || optionsArray.length < 1) {
       toast.error("Please fill all Fields", {
         position: "top-right",
         autoClose: 1000,
@@ -125,11 +103,18 @@ else if (questionsText === "" || optionsArray.length < 1) {
         progress: undefined,
       });
 
-      
+    //  posting data to server
+
+    axios.post("http://localhost:3001/questions" , questionAnswerObjArr)
+
+
+
     }
     // setting default values
     setQuestionsText("");
     setOptionsArray([]);
+
+    
   };
 
   const getEditKey = (key) => {
@@ -171,7 +156,6 @@ else if (questionsText === "" || optionsArray.length < 1) {
       <section className="flex md:w-4/6">
         <div className="w-full  p-5">
           {" "}
-          Total questions : {questionAnswerObjArr.length}
           <PreviewComponent
             heading="Question"
             text={questionsText}
