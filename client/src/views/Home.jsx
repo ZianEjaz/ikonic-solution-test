@@ -3,11 +3,17 @@ import TextArea from "../components/FormComponent";
 import PreviewComponent from "../components/PreviewComponent";
 import OptionsComponent from "../components/OptionsComponent";
 import { ToastContainer, toast } from "react-toastify";
+import AllQuestions from "../components/AllQuestions";
 
 const Home = () => {
   // state hooks
   const [questionsText, setQuestionsText] = useState("");
   const [answersText, setAnswersText] = useState("");
+  const [submitBtnText, setSubmitBtnText] = useState(
+    "Submit Question and Options"
+  );
+  const [edit, setEdit] = useState(false);
+  const [editKey, setEditKey] = useState();
   const [questionAnswerObjArr, setQuestionAnswerObjArr] = useState([
     // {
     //   key: 0,
@@ -77,7 +83,20 @@ const Home = () => {
   };
 
   const submitQuestionAnswer = () => {
-    if (questionsText === "" || optionsArray.length < 1) {
+
+// edit logic
+if(edit === true){
+  
+  questionAnswerObjArr[editKey] = {
+    key: questionAnswerObjArr.length,
+    question: questionsText,
+    options: optionsArray,
+  }
+  console.log(questionAnswerObjArr[editKey])
+  setEdit(false)
+
+}
+else if (questionsText === "" || optionsArray.length < 1) {
       toast.error("Please fill all Fields", {
         position: "top-right",
         autoClose: 1000,
@@ -88,7 +107,7 @@ const Home = () => {
         progress: undefined,
       });
     } else {
-      setQuestionAnswerObjArr([
+      setQuestionAnswerObjArr(() => [
         ...questionAnswerObjArr,
         {
           key: questionAnswerObjArr.length,
@@ -96,6 +115,7 @@ const Home = () => {
           options: optionsArray,
         },
       ]);
+
       toast.success("Question Added", {
         position: "top-right",
         autoClose: 1000,
@@ -106,10 +126,20 @@ const Home = () => {
         progress: undefined,
       });
 
-      // setting default values
-      setQuestionsText("");
-      setOptionsArray([]);
+      
     }
+    // setting default values
+    setQuestionsText("");
+    setOptionsArray([]);
+  };
+
+  const getEditKey = (key) => {
+    setEdit(true);
+    setEditKey(key);
+    const selectedObj = questionAnswerObjArr[key];
+    setSubmitBtnText("Save Edited Question");
+    setQuestionsText(selectedObj.question);
+    setOptionsArray(selectedObj.options);
   };
 
   return (
@@ -139,29 +169,35 @@ const Home = () => {
           </button>
         </div>
       </aside>
-      <section className="w-full md:w-4/6 p-5">
-        Total questions : {questionAnswerObjArr.length}
-        <PreviewComponent
-          heading="Question"
-          text={questionsText}
-          className="border-b mb-5"
-        />
-        <h2>Please Choose a correct answer</h2>
-        <OptionsComponent options={optionsArray} func={getCorrectOption} />
-        <button
-          className="border bg-green-500 rounded-xl p-3 mt-5 enabled:hover:bg-gray-400 disabled:disabled disabled:cursor-not-allowed disabled:bg-red-500"
-          
-          onClick={submitQuestionAnswer}
-          disabled={
-            questionsText === "" || optionsArray.length < 1
-              ? true
-              : false
-          }
-        >
-          {questionsText === "" || optionsArray.length < 1
-            ? "Please fill all the fields"
-            : "Submit Question and Options"}
-        </button>
+      <section className="flex md:w-4/6">
+        <div className="w-full  p-5">
+          {" "}
+          Total questions : {questionAnswerObjArr.length}
+          <PreviewComponent
+            heading="Question"
+            text={questionsText}
+            className="border-b mb-5"
+          />
+          <h2 className="font-bold text-x p-3">
+            Please Choose a correct answer
+          </h2>
+          <OptionsComponent options={optionsArray} func={getCorrectOption} />
+          <button
+            className="border bg-green-500 rounded-xl p-3 mt-5 enabled:hover:bg-gray-400 disabled:disabled disabled:cursor-not-allowed disabled:bg-red-500"
+            onClick={submitQuestionAnswer}
+            disabled={
+              questionsText === "" || optionsArray.length < 1 ? true : false
+            }
+          >
+            {questionsText === "" || optionsArray.length < 1
+              ? "Please fill all the fields"
+              : submitBtnText}
+          </button>
+        </div>
+        <div className="p-5 shadow-xl w-1/3 overflow-scroll h-screen">
+          <h2 className="font-bold text-x p-3">Questions Added</h2>
+          <AllQuestions data={questionAnswerObjArr} getEditKey={getEditKey} />
+        </div>
       </section>
     </div>
   );
