@@ -130,7 +130,7 @@ const Home = () => {
     <div className="flex flex-wrap bg-gray-100 min-h-screen content-center">
       <ToastContainer />
       <aside className="w-full md:w-2/6  bg-gray-100 shadow-xl text-center h-screen md:sticky top-0  ">
-        <h2 className="font-bold text-x p-3">Zian's Iknoic Test</h2>
+        <h2 className="font-bold text-x p-3">Zian's Questions App</h2>
         <div className=" p-5 items-stretch">
           <TextArea
             label="Questions"

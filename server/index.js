@@ -1,10 +1,6 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 var cors = require("cors");
-const mongoose = require("mongoose");
-require("dotenv").config();
-const QuestionAnswerObj = require("./models/questionsAnswersSchema");
 
 const port = 3001;
 
@@ -13,20 +9,12 @@ app.use(
     type: ["application/json", "text/plain"],
   })
 );
-//Here we are configuring express to use body-parser as middle-ware.
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
 app.use(cors());
-
-mongoose
-  .connect(process.env.mongoDbConnect)
-  .then((res) => console.log("database connected"))
-  .catch((err) => console.log("DB connecton error"));
 
 let questions = [
   {
     key: 0,
-    question: "test question",
+    question: "test question 1",
     options: [
       {
         option: "1",
@@ -48,7 +36,7 @@ let questions = [
   },
   {
     key: 1,
-    question: "test question",
+    question: "test question 2",
     options: [
       {
         option: "1",
@@ -70,7 +58,7 @@ let questions = [
   },
   {
     key: 2,
-    question: "test question",
+    question: "test question 3",
     options: [
       {
         option: "1",
@@ -101,13 +89,8 @@ app.get("/questions", (req, res) => {
 });
 
 app.post("/questions", (req, res) => {
- const dataArray = {data : req.body}
- 
-  const postRes = new QuestionAnswerObj(dataArray);
-  postRes
-    .save()
-    .then((res) => console.log("data saved"))
-    .catch((err) => console.log("data not saved !!!ERROR", err.errors));
+  questions = res.body;
+  console.log(req.body);
 });
 
 app.listen(port, () => console.log(`running on port ${port}`));
